@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
+import sklearn.metrics
+# import dill
 
 app = Flask(__name__)
 
@@ -10,22 +12,30 @@ def iris_prediction():
     if request.method == 'GET':
         return render_template('iris-prediction.html')
     elif request.method == 'POST':
-        print('OK')
-        print(dict(request.form))
+        try:
+            print('OK')
+            print(dict(request.form))
 
-        heart_features = dict(request.form).values()
-        heart_features = np.array([float(x) for x in heart_features])
-        model, std_scaler = joblib.load('model/Hearth.pkl')
-        heart_features = std_scaler.transform([heart_features])
-        print(heart_features)
+            heart_features = dict(request.form).values()
+            heart_features = np.array([float(x) for x in heart_features])
 
-        result = model.predict(heart_features)
-        heart = {
-            '0': 'Engga',
-            '1': 'Iyaa',
-        }
-        result = heart[str(result[0])]
-        return render_template('iris-prediction.html', result=result)
+            print(heart_features)
+            model = joblib.load('model/model.pkl')
+            return 'OK'
+            heart_features = std_scaler.transform([heart_features])
+            print(heart_features)
+
+            result = model.predict(heart_features)
+            heart = {
+                '0': 'Engga',
+                '1': 'Iyaa',
+            }
+            result = heart[str(result[0])]
+            return render_template('iris-prediction.html', result=result)
+
+        except Exception as e:
+            print(e)
+            return e
 
         # iris_features = dict(request.form).values()
         # iris_features = np.array([float(x) for x in iris_features])
