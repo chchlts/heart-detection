@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import joblib
 import numpy as np
 import sklearn.metrics
+from sklearn.preprocessing import StandardScaler
 # import dill
 
 app = Flask(__name__)
@@ -13,23 +14,18 @@ def iris_prediction():
         return render_template('iris-prediction.html')
     elif request.method == 'POST':
         try:
-            print('OK')
-            print(dict(request.form))
-
             heart_features = dict(request.form).values()
             heart_features = np.array([float(x) for x in heart_features])
 
-            print(heart_features)
-            model = joblib.load('model/model.pkl')
-            return 'OK'
-            heart_features = std_scaler.transform([heart_features])
-            print(heart_features)
+            model, scaler = joblib.load('./model/heart-using-svm.pkl')
+            heart_features = scaler.transform([heart_features])
 
             result = model.predict(heart_features)
             heart = {
                 '0': 'Engga',
                 '1': 'Iyaa',
             }
+
             result = heart[str(result[0])]
             return render_template('iris-prediction.html', result=result)
 
